@@ -1,0 +1,674 @@
+@page "/Konveyer"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+  <nav>
+    <button class="nav-btn" data-tab="kredit">Kredit shartlari</button>
+    <button class="nav-btn" data-tab="klient">Klient ma‘lumotlari</button>
+    <button class="nav-btn" data-tab="yashash">Yashash joyi</button>
+    <button class="nav-btn" data-tab="telefon">Telefon raqamlar</button>
+    <button class="nav-btn" data-tab="karta">Karta ma‘lumotlari</button>
+    <button class="nav-btn" data-tab="tasdiq">Tasdiqlash</button>
+    <button class="nav-btn" data-tab="yakun">Yakunlash</button>
+  </nav>
+
+  <div class="main">
+    <h1 style="padding: 20px;">Ariza {{credit.contract_id}}</h1>
+    <!-- -----------------------------------First Tab-----Kredit------------------------------------------ -->
+    <div class="tab" id="kredit" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="kredit" ? "block" : "none")">
+        <div class="first-tab">
+          <div class="credit-data">
+            <h1>Kredit shartlari</h1>
+            <label for="">Summa</label>
+            <input type="number" id="amount" placeholder="10 000 000" value="{{credit.amount}}">
+            <div style="display: flex;flex-direction: row;gap:5px;">
+              <div style="display: flex;flex-direction: column;gap:5px;">
+                <label for="start_date">Boshlanish sana</label>
+                <input type="date" id="start_date" name="start_date" value="{{credit.start_date|date:'Y-m-d' }}">
+              </div>
+              <div style="display: flex;flex-direction: column;gap:5px;">
+                <label for="end_date">Tugash sana</label>
+                <input type="date" id="end_date" name="end_date" value="{{credit.end_date|date:'Y-m-d' }}">
+              </div>
+            </div>
+            <label for="pay_day">To‘lov kuni</label>
+            <input type="number" name="pay_day" id="pay_day" placeholder="10" value="{{credit.pay_day}}">
+            <label for="rate">Yillik foizi</label>
+            <input type="number" value="{{credit.rate}}" name="rate" id="credit_rate" placeholder="{{credit.rate}}%">
+            <label for="fine">Jarima foizi</label>
+            <input type="number" value="{{credit.application.fine}}" name="fine" id="fine" placeholder="{{credit.application.fine}}%">
+            <button class="in_btn" id="make_graphic">Grafik yaratish</button>
+          </div>
+          <div>
+            <table id="graphic-holder">
+              <thead>
+                <tr>
+                  <th>Sana</th>
+                  <th>To‘lov</th>
+                  <th>Asosiy qarz</th>
+                  <th>Foizlar</th>
+                  <th>Qarz qoldig‘i</th>
+                  <th>stavka %</th>
+                </tr>
+              </thead>
+              <tbody id="graphic">
+                <!-- <tr>
+                  <td>12.02.2025</td>
+                  <td>5 000</td>
+                  <td>1 000</td>
+                  <td>4 000</td>
+                  <td>10 000</td>
+                  <td>49%</td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+    <!-- -----------------------------------Second Tab-----------Klient ma‘lumotlari------------------------------------ -->
+
+      <div class="tab" id="klient" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="klient" ? "block" : "none")">
+          <div class="second-tab">
+            <h1>Mijoz ma‘lumotlari</h1>
+            <div class="second-tab-data">
+              <div class="input-item">
+                <label for="passport_pinfl">Jshshir</label>
+                <input type="text" id="passport_pinfl" name="passport_pinfl" placeholder="JSHSHIR" value="{{credit.client.passport_pinfl}}">
+              </div>
+              <div class="input-item">
+                <label for="find-client-btn">Mijozni izlash</label>
+                <button class="find-client-btn" onclick="get_client()">Izlash</button>
+              </div>
+              <div class="input-item">
+                <label for="first_name">Ism</label>
+                <input type="text" id="first_name" name="first_name" placeholder="Ism" value="{{credit.client.first_name}}">
+              </div>
+              <div class="input-item">
+                <label for="last_name">Familiya</label>
+                <input type="text" id="last_name" name="last_name" placeholder="Familiya" value="{{credit.client.last_name}}">
+              </div>
+              <div class="input-item">
+                <label for="middle_name">Otasining ismi</label>
+                <input type="text" id="middle_name" name="middle_name" placeholder="Otasining ismi" value="{{credit.client.middle_name}}">
+              </div>
+              <div class="input-item">
+                <label for="gender">Jinsi</label>
+                <select name="gender" id="gender" class="form-select" style="font-size: 25px;">
+                  <option value="male" {% if credit.client.gender == "male" %}selected{%endif%}>Erkak</option>
+                  <option value="female" {% if credit.client.gender == "female" %}selected{%endif%}>Ayol</option>
+                </select>
+              </div>
+              <div class="input-item">
+                <label for="birth_date">Tug‘ilgan sana</label>
+                <input type="date" id="birth_date" name="birth_date" value="{{credit.client.birth_date|date:'Y-m-d' }}">
+              </div>
+              <div class="input-item">
+                <label for="client_region">Shahar(tuman)</label>
+                <input type="text" id="client_region" name="client_region" placeholder="Farg‘ona viloyati" value="{{credit.client.client_region}}">
+              </div>
+              <div class="input-item">
+                <label for="client_country">Davlat</label>
+                <input type="text" id="client_country" name="client_country" placeholder="O‘zbekiston" value="{{credit.client.client_country}}">
+              </div>
+              <div class="input-item">
+                <label for="education">Ma‘lumoti</label>
+                <select name="education" id="education" style="font-size: 25px;">
+                  <option value="1" {% if credit.client.education == "1" %}selected{% endif %}>Oliy</option>
+                  <option value="2" {% if credit.client.education == "2" %}selected{% endif %}>O‘rta</option>
+                  <option value="3" {% if credit.client.education == "3" %}selected{% endif %}>O‘rta-maxsus</option>
+                  <option value="4" {% if credit.client.education == "4" %}selected{% endif %}>Tuganlanmagan oliy</option>
+                  <option value="5" {% if credit.client.education == "5" %}selected{% endif %}>Boshlang‘ich</option>
+                </select>
+              </div>
+            </div>
+            <h1>Shaxsni tasdiqlovchi hujjat ma'lumotlari</h1>
+            <div class="second-tab-data">
+              <div class="input-item">
+                <label for="passport_serial_letter">Passport seriyasi</label>
+                <input type="text" id="passport_serial_letter" name="passport_serial_letter" placeholder="AB" value="{{credit.client.passport_serial_letter}}">
+              </div>
+              <div class="input-item">
+                <label for="passport_serial_number">Seriya raqami</label>
+                <input type="text" id="passport_serial_number" name="passport_serial_number" placeholder="1001200" value="{{credit.client.passport_serial_number}}">
+              </div>
+              <div class="input-item">
+                <label for="passport_got_date">Olingan sanasi</label>
+                <input type="date" id="passport_got_date" name="passport_got_date" value="{{credit.client.passport_got_date|date:'Y-m-d' }}">
+              </div>
+              <div class="input-item">
+                <label for="passport_expiry_date">Tugash sanasi</label>
+                <input type="date" id="passport_expiry_date" name="passport_expiry_date" value="{{credit.client.passport_expiry_date|date:'Y-m-d' }}">
+              </div>
+              <div class="input-item">
+                <label for="passport_got_region">Berilgan joyi</label>
+                <input type="text" id="passport_got_region" name="passport_got_region" placeholder="IIV 27248" value="{{credit.client.passport_got_region}}">
+              </div>
+              <div class="input-item">
+                <label for="passport_country">Davlat</label>
+                <input type="text" id="passport_country" name="passport_country" placeholder="O‘zbekiston" value="{{credit.client.passport_country}}">
+              </div>
+              <div class="input-item">
+                <label for="passport_got_region">Shahar(tuman)</label>
+                <input type="text" id="passport_got_region" name="passport_got_region" placeholder="Farg‘ona viloyati" value="{{credit.client.passport_got_region}}">
+              </div>
+              </div>
+          </div>
+      </div>
+
+    <!-- -----------------------------------Third Tab--------------------Yashash joyi--------------------------- -->
+
+      <div class="tab" id="yashash" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="yashash" ? "block" : "none")">
+            <div class="third-tab">
+              <h1>Ro'yxatdan o'tish manzili ma'lumotlari</h1>
+              <div class="second-tab-data">
+                <div class="input-item">
+                    <label for="base_country">Davlat</label>
+                    <input type="text" id="base_country" name="base_country" placeholder="O‘zbekiston" value="{{credit.client.base_country}}">
+                </div>
+                <div class="input-item">
+                    <label for="base_region">Viloyat</label>
+                    <input type="text" id="base_region" name="base_region" placeholder="Farg‘ona viloyati" value="{{credit.client.base_region}}">
+                  </div>
+                <div class="input-item">
+                    <label for="base_city">Shahar(tuman)</label>
+                    <input type="text" id="base_city" name="base_city" placeholder="Farg‘ona shahri" value="{{credit.client.base_city}}">
+                </div>
+                <div class="input-item">
+                    <label for="base_address">Manzil</label>
+                    <input type="text" id="base_address" name="base_address" style="width: 350px;" placeholder="Birnima MFY Birnima ko‘chasi 01-uy" value="{{credit.client.base_address}}">
+                </div>
+              </div>
+              <button class="in_btn" onclick="same_address()">Pastga tushirish</button>
+              <h1>Joriy manzil ma'lumotlari</h1>
+              <div class="second-tab-data">
+                <div class="input-item">
+                    <label for="current_country">Davlat</label>
+                    <input type="text" id="current_country" name="current_country" placeholder="O‘zbekiston" value="{{credit.client.current_country}}">
+                </div>
+                <div class="input-item">
+                    <label for="current_region">Viloyat</label>
+                    <input type="text" id="current_region" name="current_region" placeholder="Farg‘ona viloyati" value="{{credit.client.current_region}}">
+                  </div>
+                <div class="input-item">
+                    <label for="current_city">Shahar(tuman)</label>
+                    <input type="text" id="current_city" name="current_city" placeholder="Farg‘ona shahri" value="{{credit.client.current_city}}">
+                </div>
+                <div class="input-item">
+                    <label for="current_address">Manzil</label>
+                    <input type="text" id="current_address" name="current_address" style="width: 350px;" placeholder="Birnima MFY Birnima ko‘chasi 01-uy" value="{{credit.client.current_address}}">
+                </div>
+              </div>
+            </div>
+      </div>
+
+
+    <!-- -----------------------------------Fourth Tab--------------------Telefon raqam--------------------------- -->
+
+    <div class="tab" id="telefon" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="telefon" ? "block" : "none")">
+          <div class="forth-tab">
+            <div class="second-tab-data">
+              <div class="input-item">
+                  <label for="num_number">Telefon raqam</label>
+                  <input type="text" id="num_number" name="num_number" style="width: 350px;" placeholder="94 139 07 72">
+              </div>
+              <div class="input-item">
+                  <label for="num_name">Izoh</label>
+                  <input type="text" id="num_name" class="num_name" name="num_name" style="width: 350px;" placeholder="Birnimajon">
+              </div>
+              <button class="in_btn" onclick="save_number()">Saqlash</button>
+            </div>
+
+            <div id="numbers-holder">
+              {% if numbers %}
+                {% for i in numbers %}
+                <div class="second-tab-data">
+                  <h1>{{i.number}}</h1>
+                  <h1>{{i.name}}</h1>
+                  <button class="in_btn">O‘chirish</button>
+                </div>
+                {% endfor %}
+              {% else %}
+              <h2>Telefon raqam yo‘q</h2>
+              {% endif %}
+            </div>
+
+          </div>
+    </div>
+
+
+    <!-- -----------------------------------Fiveth Tab--------------------Karta ma‘lumotlari--------------------------- --> 
+
+    <div class="tab" id="karta" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="karta" ? "block" : "none")">
+          <div class="fiveth-tab">
+            <div class="second-tab-data">
+              <div class="input-item">
+                  <label for="card">Kartani kiriting</label>
+                  <input type="text" id="card" name="card" style="width: 350px;" placeholder="8600 0000 0000 0000">
+              </div>
+              <div class="input-item">
+                  <label for="valid">Karta muddati</label>
+                  <input type="text" id="valid" name="valid" style="width: 350px;" placeholder="12/27">
+              </div>
+              <button class="in_btn">Saqlash</button>
+            </div>
+          </div>
+    </div>
+
+
+
+
+    <!-- -----------------------------------Sixth Tab--------------------Tasdiqlash--------------------------- -->
+
+    <div class="tab" id="tasdiq" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="tasdiq" ? "block" : "none")">
+              <div class="sixth-tab">
+                <h1>Ma'lumotlarni tasdiqlash</h1>
+                <div class="main-sixth-tab">
+                  <div style="display: flex;flex-direction: row;justify-content: space-between;gap:20px;">
+
+
+                      <div class="sixth-tab-data">
+                        <div class="row-data-view">
+                          <p>FIO:</p>
+                          <h2>{{credit.client.last_name}} {{credit.client.first_name}} {{credit.client.middle_name}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>JSHSHIR:</p>
+                          <h2>{{credit.client.passport_pinfl}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>TUG‘ILGAN SANA:</p>
+                          <h2>{{credit.client.birth_date}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>TELEFON:</p>
+                          {% if numbers %}
+                            <h2>{{numbers.0.number}}</h2>
+                          {% else %}
+                            <h2>Raqam yo‘q</h2>
+                          {% endif %}
+                        </div>
+                        <div class="row-data-view">
+                          <p>KREDIT MAXSULOTI:</p>
+                          <h2>{{credit.application.name}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>KREDIT SUMMASI:</p>
+                          <h2>1{{credit.amount|intcomma}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>KREDIT MUDDATI:</p>
+                          <h2 id="credit_length">1 yil 6 oy</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>KREDIT FOIZ STAVKASI:</p>
+                          <h2>{{credit.rate}}%</h2>
+                        </div>
+                      </div>
+
+                    <div class="sixth-tab-data">
+                        <div class="row-data-view">
+                          <p>Guvohnoma seriyasi va nomeri:</p>
+                          <h2>{{credit.client.passport_serial_letter}} {{credit.client.passport_serial_number}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>Guvohnoma turi:</p>
+                          <h2>{{credit.client.passport_type}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>Berilgan sana:</p>
+                          <h2>{{credit.client.passport_got_date}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>Tugash muddati:</p>
+                          <h2>{{credit.client.passport_expiry_date}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>Fuqarolik:</p>
+                          <h2>{{credit.client.client_country}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>Berilgan:</p>
+                          <h2>Toshkent viloyati Yuqorichirchiq tumani IIB</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>Ro'yxatdan o'tgan joyi:</p>
+                          <h2>{{credit.client.base_address}}</h2>
+                        </div>
+                        <div class="row-data-view">
+                          <p>Yashash joyi:</p>
+                          <h2>{{credit.client.base_address}}</h2>
+                        </div>
+                      </div>
+
+
+
+                  </div>
+                </div>
+              </div>
+    </div>
+
+
+
+
+
+    <!-- -----------------------------------Seventh Tab--------------------Tugatish--------------------------- -->
+
+
+    <div class="tab" id="yakun">
+          <div class="fiveth-tab">
+            <div class="second-tab-data">
+              <h1 style="color: white;">KREDITLASHNI YAKUNLASH</h1>
+              <a class="in_btn" href="{% url 'give_credit' credit.id %}">YAKUNLASH</a>
+            </div>
+          </div>
+    </div>
+  
+
+
+
+  </div>
+
+
+
+  <div class="footer">
+    <button id="prev-btn" class="bt-nav-btn">Orqaga</button>
+    <a style="text-decoration: none;" href="{% url 'home' %}" class="bt-nav-btn">Berkitish</a>
+    <a class="bt-nav-btn" href="{% url 'reject_credit' credit.id %}" style="text-decoration: none;">Bekor qilish</a>
+    <button id="next-btn" class="bt-nav-btn" onclick="send_data()">Tasqidlash</button>
+  </div>
+  
+
+
+@code {
+  string[] Tabs = [
+    "kredit",
+    "klient",
+    "yashash",
+    "telefon",
+    "karta",
+    "tasdiq",
+    "yakun"
+  ];
+
+  int CurrentTabIndex = 0;
+
+
+  [Parameter]
+  [SupplyParameterFromQuery(Name="tab")]
+  public string? QueryTabName {get;set;}
+
+  protected override void OnParametersSet(){
+    if (!string.IsNullOrWhiteSpace(QueryTabName)){
+      int res = Array.IndexOf(Tabs,QueryTabName);
+      if (res < -1){
+        CurrentTabIndex = res;
+        UpdateQuery();
+      }
+    }
+  }
+
+  private void UpdateQuery(){
+    var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+    var baseUri = uri.GetLeftPart(UriPartial.Path);
+    var newUri = $"{baseUri}?tab={Tabs[CurrentTabIndex]}";
+    Navigation.NavigateTo(newUri,forceLoad:false);
+  }
+
+
+}
+
+
+
+<style>
+  :root{
+    --pm-color : rgb(20, 82, 107);
+    --box-bg : rgba(45, 83, 133, 0.418);
+  }
+  *{
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  }
+
+
+
+  .first-tab{
+    background-color: var(--box-bg);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    justify-content:space-around;
+    padding: 20px;
+    margin-bottom: 100px;
+  }
+  .second-tab{
+    background-color: var(--box-bg);
+    display: flex;
+    flex-direction: row;
+    flex-wrap:wrap;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 100px;
+  }
+  .second-tab-data{
+    background-color: var(--box-bg);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap:wrap;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    color: white;
+  }
+  .third-tab{
+    background-color: var(--box-bg);
+    display: flex;
+    flex-direction: column;
+    flex-wrap:wrap;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 100px;
+  }
+  .forth-tab{
+    background-color: var(--box-bg);
+    display: flex;
+    flex-direction: column;
+    flex-wrap:wrap;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 100px;
+  }
+  .fiveth-tab{
+    background-color: var(--box-bg);
+    display: flex;
+    flex-direction: column;
+    flex-wrap:wrap;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 100px;
+  }
+  .sixth-tab{
+    background-color: var(--box-bg);
+    display: flex;
+    flex-direction: column;
+    flex-wrap:wrap;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 100px;
+  }
+  .main-sixth-tab{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .sixth-tab-data{
+    background-color: var(--box-bg);
+    display: flex;
+    flex-direction: column;
+    flex-wrap:wrap;
+    gap: 20px;
+    padding: 20px;
+    color: white;
+    border-radius: 12px;
+  }
+  .row-data-view{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap:20px;
+    align-items: center;
+    border-bottom: 2px solid white;
+  }
+  .row-data-view h2{
+    font-size:23px;
+  }
+  #numbers-holder{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+  }
+
+
+
+  nav{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--pm-color);
+    padding: 20px;
+  }
+  .credit-data{
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+  }
+  .footer{
+    position: fixed;
+    bottom: 0;
+    left:0;
+    width:100%;
+    background-color: var(--pm-color);
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 20px;
+  }
+  .bt-nav-btn{
+    padding: 10px;
+    font-size: 20px;
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 12px;
+    color:white;
+  }
+  .bt-nav-btn:hover{
+    padding: 10px;
+    font-size: 20px;
+    background-color: white;
+    border: 2px solid white;
+    border-radius: 12px;
+    color:black;
+  }
+  .nav-btn{
+    padding: 10px;
+    font-size: 25px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 12px;
+  }
+  .nav-btn:hover{
+    padding: 10px;
+    font-size: 25px;
+    background-color: white;
+    color: black;
+    border: 2px solid rgb(201, 201, 201);
+  }
+  .nav-btn.active{
+    padding: 10px;
+    font-size: 25px;
+    background-color: white;
+    color: black;
+    border: 2px solid rgb(201, 201, 201);
+  }
+  input{
+    padding: 10px;
+    border-radius: 12px;
+    border: 3px solid black;
+    font-size: 20px;
+  }
+  .in_btn{
+    padding: 10px;
+    font-size: 25px;
+    background-color: transparent;
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 12px;
+  }
+  .in_btn:hover{
+    background-color: white;
+    color: rgb(0, 0, 0);
+    border: 2px solid blanchedalmond;
+  }
+  .input-item{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .tab{
+    display: none;
+  }
+
+  .tab.active{
+    display: block;
+  }
+
+  table{
+    border: 5px solid rgb(0, 0, 0);
+    padding: 5px;
+    border-radius: 13px;
+    background-color: rgb(193, 222, 255);
+    display: none;
+  }
+  th, td{
+    padding: 5px;
+    font-size: 20px;
+    border:1px solid black;
+    font-size: 25px;
+  }
+  .res{
+    border:2px solid green;
+    background-color: rgb(164, 221, 235);
+  }
+  #graphic-holder{
+    overflow-x: scroll;
+    height: 35vw;
+  }
+  .find-client-btn{
+    background-color: rgb(201, 201, 201);
+    color: black;
+    border:3px solid black;
+    border-radius: 12px;
+    font-size: 20px;
+    padding: 10px;
+  }
+  .find-client-btn:hover{
+    background-color: black;
+    color: white;
+  }
+  .find-client-btn:active{
+    background-color: black;
+    color: white;
+  }
+
+</style>

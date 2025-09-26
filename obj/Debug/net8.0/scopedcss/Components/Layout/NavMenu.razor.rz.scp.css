@@ -1,0 +1,37 @@
+
+  *[b-3pwichk411]{
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  }
+  .body[b-3pwichk411]{
+    background-color: rgb(18, 148, 105);
+  }
+  nav[b-3pwichk411]{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: rgb(20, 82, 107);
+    padding: 20px;
+    font-size: 25px;
+    color: white;
+    border-bottom: 1px solid rgb(13, 51, 66);
+    align-items: center;
+  }
+  a[b-3pwichk411]{
+    color: white;
+    text-decoration: none;
+  }
+  select[b-3pwichk411]{
+    background-color: transparent;
+    border: 0;
+    color: white;
+    font-size: 25px;
+  }
+  option[b-3pwichk411]{
+    background-color: transparent;
+    color: black;
+  }
+  .ariza-container[b-3pwichk411]{
+
+  }

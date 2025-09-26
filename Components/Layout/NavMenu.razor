@@ -1,0 +1,17 @@
+﻿@inject NavigationManager Navigator
+
+<nav>
+        <h1><a href="">Lisa Kredit konveyeri</a></h1>
+        <select name="" id="" @onchange="Navigate">
+            <option value="/"><a href="">-------------------</a></option>
+            <option value="/Applications" ><a href="">Arizani yuborish</a></option>
+            <option value="/"><a href="">Arizalar tarixi</a></option>
+        </select>
+        <a href="">Abduqodirov Dilmuhammad Sodirjon o‘g‘li</a>
+</nav>
+
+@code {
+    private void Navigate(ChangeEventArgs e){
+        Navigator.NavigateTo(e.Value.ToString());
+    }
+}

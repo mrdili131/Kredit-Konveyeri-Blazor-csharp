@@ -1,0 +1,143 @@
+/* _content/Konveyer/Components/Layout/MainLayout.razor.rz.scp.css */
+:root[b-oq0afha91t]{
+    --pm-color : rgb(20, 82, 107);
+    --box-bg : rgba(45, 83, 133, 0.418);
+  }
+  *[b-oq0afha91t]{
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  }
+  .body[b-oq0afha91t]{
+    background-color: rgb(18, 148, 105);
+  }
+  nav[b-oq0afha91t]{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: var(--pm-color);
+    padding: 20px;
+    font-size: 25px;
+    color: white;
+    border-bottom: 1px solid rgb(13, 51, 66);
+    align-items: center;
+  }
+  a[b-oq0afha91t]{
+    color: white;
+    text-decoration: none;
+  }
+  select[b-oq0afha91t]{
+    background-color: transparent;
+    border: 0;
+    color: white;
+    font-size: 25px;
+  }
+  option[b-oq0afha91t]{
+    background-color: transparent;
+    color: black;
+  }
+  .main[b-oq0afha91t]{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    color: rgba(255, 255, 255, 0.842);
+    margin-top: 100px;
+    margin-bottom: 100px;
+  }
+  .box-container[b-oq0afha91t]{
+    background-color: rgb(16, 95, 69);
+    padding: 200px;
+    border-radius: 10px;
+    border: 5px solid rgb(11, 61, 44);
+  }
+  .ariza-container[b-oq0afha91t]{
+
+  }
+  table[b-oq0afha91t]{
+    margin-top: 20px;
+    background-color: rgb(28, 116, 86);
+    border: 5px solid rgb(197, 197, 197);
+    border-radius: 5px;
+  }
+  td[b-oq0afha91t],th[b-oq0afha91t]{
+    border: 3px solid rgb(197, 197, 197);
+    padding: 10px;
+    font-size: 20px;
+    color: white;
+  }
+/* _content/Konveyer/Components/Layout/NavMenu.razor.rz.scp.css */
+
+  *[b-3pwichk411]{
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  }
+  .body[b-3pwichk411]{
+    background-color: rgb(18, 148, 105);
+  }
+  nav[b-3pwichk411]{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: rgb(20, 82, 107);
+    padding: 20px;
+    font-size: 25px;
+    color: white;
+    border-bottom: 1px solid rgb(13, 51, 66);
+    align-items: center;
+  }
+  a[b-3pwichk411]{
+    color: white;
+    text-decoration: none;
+  }
+  select[b-3pwichk411]{
+    background-color: transparent;
+    border: 0;
+    color: white;
+    font-size: 25px;
+  }
+  option[b-3pwichk411]{
+    background-color: transparent;
+    color: black;
+  }
+  .ariza-container[b-3pwichk411]{
+
+  }
+/* _content/Konveyer/Components/Pages/Home.razor.rz.scp.css */
+:root[b-mhn2l08ir4]{
+    --pm-color : rgb(20, 82, 107);
+    --box-bg : rgba(45, 83, 133, 0.418);
+  }
+  *[b-mhn2l08ir4]{
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  }
+  .body[b-mhn2l08ir4]{
+    background-color: rgb(18, 148, 105);
+  }
+  a[b-mhn2l08ir4]{
+    color: white;
+    text-decoration: none;
+  }
+  .main[b-mhn2l08ir4]{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    color: rgba(255, 255, 255, 0.842);
+    margin-top: 100px;
+    margin-bottom: 100px;
+  }
+  .box-container[b-mhn2l08ir4]{
+    background-color: rgb(16, 95, 69);
+    padding: 200px;
+    border-radius: 10px;
+    border: 5px solid rgb(11, 61, 44);
+  }
+  .ariza-container[b-mhn2l08ir4]{
+
+  }
