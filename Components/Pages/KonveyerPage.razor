@@ -1,6 +1,8 @@
-@page "/Konveyer"
+@page "/Konveyer/{CreditId:int}"
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
+@using Konveyer.Models
+@inject Konveyer.Data.KonveyerDbContext DbContext
 
   <nav>
     <button class="nav-btn" data-tab="kredit">Kredit shartlari</button>
@@ -13,7 +15,7 @@
   </nav>
 
   <div class="main">
-    <h1 style="padding: 20px;">Ariza {{credit.contract_id}}</h1>
+    <h1 style="padding: 20px;">Ariza </h1>
     <!-- -----------------------------------First Tab-----Kredit------------------------------------------ -->
     <div class="tab" id="kredit" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="kredit" ? "block" : "none")">
         <div class="first-tab">
@@ -382,6 +384,14 @@
 
 
 @code {
+
+  [Parameter] public int CreditId {get;set;}
+
+  List<Credit> 
+
+
+  //Tabbing
+
   string[] Tabs = [
     "kredit",
     "klient",
@@ -416,6 +426,7 @@
     Navigation.NavigateTo(newUri,forceLoad:false);
   }
 
+  //End Tabbing
 
 }
 

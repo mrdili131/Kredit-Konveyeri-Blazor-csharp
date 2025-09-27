@@ -4,6 +4,7 @@
 @using Konveyer.Models
 @using Microsoft.EntityFrameworkCore
 @using Konveyer.Components.Layout
+@inject NavigationManager Navigator
 
 <NavMenu/>
 
@@ -11,12 +12,12 @@
         <h1 style="margin-bottom: 25px;color: white;">Kredit maxsulotini tanlang</h1>
         <div class="form">
         @foreach (var app in Apps){
-            <div class="application">
+            <button class="application" @onclick="()=>CreateCredit(app)">
                 <h1>@app.Name</h1>
                 <p>Maks. miqdor: @app.LimitAmount</p>
                 <p>Foiz stavkasi: @app.Rate%</p>
                 <p>Maks. muddat: @app.Fine oy</p>
-            </div>
+            </button>
         }
         </div>
     </div>
@@ -24,10 +25,17 @@
 
 @code {
     List<Application> Apps = new List<Application>();
-    private Application newApp = new Application();
+    private Credit newCredit = new Credit();
 
     protected override async Task OnInitializedAsync(){
         Apps = await DbContext.Applications.ToListAsync();
+    }
+
+    public async Task CreateCredit(Application app){
+        newCredit.ApplicationId = app.Id;
+        await DbContext.Credits.AddAsync(newCredit);
+        await DbContext.SaveChangesAsync();
+        Navigator.NavigateTo($"Konveyer/{newCredit.Id}");
     }
 }
 
