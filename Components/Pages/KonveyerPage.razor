@@ -1,8 +1,10 @@
 @page "/Konveyer/{CreditId:int}"
 @rendermode InteractiveServer
-@inject NavigationManager Navigation
-@using Konveyer.Models
+@using Konveyer.Data
 @inject Konveyer.Data.KonveyerDbContext DbContext
+@using Konveyer.Models
+@inject NavigationManager Navigator
+@inject Konveyer.Services.CreditService CreditService
 
   <nav>
     <button class="nav-btn" data-tab="kredit">Kredit shartlari</button>
@@ -15,9 +17,9 @@
   </nav>
 
   <div class="main">
-    <h1 style="padding: 20px;">Ariza </h1>
+    <h1 style="padding: 20px;">Ariza {{credit.contract_id}}</h1>
     <!-- -----------------------------------First Tab-----Kredit------------------------------------------ -->
-    <div class="tab" id="kredit" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="kredit" ? "block" : "none")">
+    <div class="tab active" id="kredit">
         <div class="first-tab">
           <div class="credit-data">
             <h1>Kredit shartlari</h1>
@@ -71,7 +73,7 @@
 
     <!-- -----------------------------------Second Tab-----------Klient ma‘lumotlari------------------------------------ -->
 
-      <div class="tab" id="klient" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="klient" ? "block" : "none")">
+      <div class="tab" id="klient">
           <div class="second-tab">
             <h1>Mijoz ma‘lumotlari</h1>
             <div class="second-tab-data">
@@ -161,7 +163,7 @@
 
     <!-- -----------------------------------Third Tab--------------------Yashash joyi--------------------------- -->
 
-      <div class="tab" id="yashash" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="yashash" ? "block" : "none")">
+      <div class="tab" id="yashash">
             <div class="third-tab">
               <h1>Ro'yxatdan o'tish manzili ma'lumotlari</h1>
               <div class="second-tab-data">
@@ -208,7 +210,7 @@
 
     <!-- -----------------------------------Fourth Tab--------------------Telefon raqam--------------------------- -->
 
-    <div class="tab" id="telefon" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="telefon" ? "block" : "none")">
+    <div class="tab" id="telefon">
           <div class="forth-tab">
             <div class="second-tab-data">
               <div class="input-item">
@@ -242,7 +244,7 @@
 
     <!-- -----------------------------------Fiveth Tab--------------------Karta ma‘lumotlari--------------------------- --> 
 
-    <div class="tab" id="karta" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="karta" ? "block" : "none")">
+    <div class="tab" id="karta">
           <div class="fiveth-tab">
             <div class="second-tab-data">
               <div class="input-item">
@@ -263,7 +265,7 @@
 
     <!-- -----------------------------------Sixth Tab--------------------Tasdiqlash--------------------------- -->
 
-    <div class="tab" id="tasdiq" style="display:@(!string.IsNullOrWhiteSpace(QueryTabName) && QueryTabName=="tasdiq" ? "block" : "none")">
+    <div class="tab" id="tasdiq">
               <div class="sixth-tab">
                 <h1>Ma'lumotlarni tasdiqlash</h1>
                 <div class="main-sixth-tab">
@@ -380,55 +382,219 @@
     <a class="bt-nav-btn" href="{% url 'reject_credit' credit.id %}" style="text-decoration: none;">Bekor qilish</a>
     <button id="next-btn" class="bt-nav-btn" onclick="send_data()">Tasqidlash</button>
   </div>
+
+@code {
+  [Parameter]
+  public int CreditId {get;set;}
+}
   
 
 
-@code {
+<script>
+  // Tabs
+  document.addEventListener("DOMContentLoaded",function (){
+      const tab_btns = document.querySelectorAll(".nav-btn")
+      const tabs = document.querySelectorAll(".tab")
 
-  [Parameter] public int CreditId {get;set;}
-
-  List<Credit> 
-
-
-  //Tabbing
-
-  string[] Tabs = [
-    "kredit",
-    "klient",
-    "yashash",
-    "telefon",
-    "karta",
-    "tasdiq",
-    "yakun"
-  ];
-
-  int CurrentTabIndex = 0;
+      window.addEventListener("load",()=>{
 
 
-  [Parameter]
-  [SupplyParameterFromQuery(Name="tab")]
-  public string? QueryTabName {get;set;}
+        const hash = window.location.hash
 
-  protected override void OnParametersSet(){
-    if (!string.IsNullOrWhiteSpace(QueryTabName)){
-      int res = Array.IndexOf(Tabs,QueryTabName);
-      if (res < -1){
-        CurrentTabIndex = res;
-        UpdateQuery();
+        if (hash){
+          const index = [...tab_btns].findIndex(btn=>'#'+btn.getAttribute('data-tab')===hash)
+          if(index!==-1){
+            show_tab(index)
+          }
+        } else {
+          show_tab(0);
+        }
+      })
+
+
+      function show_tab(index){
+        tab_btns.forEach(btn=>btn.classList.remove("active"))
+        tabs.forEach(tab=>tab.classList.remove("active"))
+
+        tab_btns[index].classList.add("active")
+        tabs[index].classList.add("active")
+        
+        window.location.hash = tab_btns[index].getAttribute('data-tab')
+      }
+
+        tab_btns.forEach((btn,index)=>btn.addEventListener("click",()=>{
+          let current_tab = document.querySelector('.tab.active')
+          const current_index = [...tabs].indexOf(current_tab)
+          if (current_index<index){
+            if(validate_fillings()==true){
+              show_tab(index)
+            }
+          } else {
+            show_tab(index)
+          }
+        }))
+      
+
+
+      let next = document.getElementById("next-btn")
+      let prev = document.getElementById("prev-btn")
+
+      next.addEventListener("click",()=>{
+          let current_tab = document.querySelector('.tab.active')
+          let holder = document.getElementById("numbers-holder")
+          const current_index = [...tabs].indexOf(current_tab)
+          const next_tab = current_index + 1
+          if (current_tab.id=="telefon" && holder.querySelector(".second-tab-data")){
+            if (next_tab <= tabs.length-1){
+                  show_tab(next_tab)
+            }
+          }
+          else if(current_tab.id=="karta"){
+            if (next_tab <= tabs.length-1){
+                  show_tab(next_tab)
+            }
+          } else {
+              if (validate_fillings()==true){
+                if (next_tab <= tabs.length-1){
+                  show_tab(next_tab)
+                }
+              }
+          }
+      })
+
+
+      prev.addEventListener("click",()=>{
+        tabs.forEach((tab,index)=>{
+          if (tab.classList.contains("active")){
+            if (index - 1 > -1){
+              show_tab(index-1)
+            }
+          }
+        })
+      })
+      // Tabs end
+
+
+  })
+
+
+
+// Graphic start
+  document.getElementById("make_graphic").addEventListener("click",()=>{
+
+    let graphic_holder = document.getElementById("graphic-holder")
+    let start = document.getElementById("start_date").value;
+    let end = document.getElementById("end_date").value;
+
+    let amount = Number(document.getElementById("amount").value)
+    let graphic = document.getElementById("graphic")
+    let pay_day = document.getElementById("pay_day").value
+
+    let start_date = new Date(start)
+    let end_date = new Date(end)
+
+    start_date.setHours(0, 0, 0, 0);
+    end_date.setHours(0, 0, 0, 0);
+
+
+    full_years = end_date.getFullYear() - start_date.getFullYear()
+    full_month = end_date.getMonth() - start_date.getMonth()
+    full_days = end_date.getDay() - start_date.getDay()
+
+    if (full_month != 0){
+        full_years -= 1;
+        full_month += 12
+        res = `${full_years} yil ${full_month} oy`
+    } else {
+        res = `${full_years} yil`
+    }
+    document.getElementById("credit_length").textContent = res
+
+
+    graphic.innerHTML = ''
+
+    left_amount = amount
+    rate = Number(document.getElementById("credit_rate").value)/12
+
+    total_month = full_years * 12 + full_month
+    monthly_amount = amount/total_month
+    total_interest = 0
+
+
+    for (let i=0;i<total_month;i++){
+      interest = left_amount/100*rate
+      total_interest += interest
+      graphic.innerHTML += `
+      <tr>
+          <td>${pay_day}.02.2025</td>
+          <td>${numify(monthly_amount+interest)}</td>
+          <td>${numify(monthly_amount)}</td>
+          <td>${numify(interest)}</td>
+          <td>${numify(left_amount)}</td>
+        <td>${numify(rate*12)}%</td>
+      </tr>
+      `
+      left_amount -= monthly_amount
+
+    }
+    graphic.innerHTML += `
+      <tr class="res">
+          <td>Jami</td>
+          <td>${numify(monthly_amount+interest)}</td>
+          <td>${numify(amount)}</td>
+          <td>${numify(total_interest)}</td>
+          <td>${numify(0)}</td>
+        <td>${numify(rate*12)}%</td>
+      </tr>
+      `
+
+      graphic_holder.style.display = 'block'
+  })
+// Graphic end
+
+
+// Validation function
+function validate_fillings(){
+  let hash = window.location.hash;
+  let current_tab = document.querySelector('.tab.active')
+  inputs = current_tab.querySelectorAll("input:not([disabled]):not([readonly]),select")
+  if (!inputs){return true}
+  for (const input of inputs){
+    if (!input.value){
+      return false
+    }
+  }
+  return true
+}
+// Validation function end
+
+function not_editable(){
+  document.querySelectorAll("input, textarea, select, button").forEach((item,index)=>{
+    item.readOnly = true;
+  })
+  document.getElementById("make_graphic").click()
+}
+
+
+// CSRF_TOKEN
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i=0; i<cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
       }
     }
   }
-
-  private void UpdateQuery(){
-    var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-    var baseUri = uri.GetLeftPart(UriPartial.Path);
-    var newUri = $"{baseUri}?tab={Tabs[CurrentTabIndex]}";
-    Navigation.NavigateTo(newUri,forceLoad:false);
-  }
-
-  //End Tabbing
-
+  return cookieValue;
 }
+
+</script>
+
+
 
 
 

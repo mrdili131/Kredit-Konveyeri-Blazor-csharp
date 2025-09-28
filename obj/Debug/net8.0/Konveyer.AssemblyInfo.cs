@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Konveyer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+591ffe94b7b55fcc89053adae35acb4d9668b7d5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6b5f6792e17d638b4ea4f033f2cb42a3865d086b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Konveyer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Konveyer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

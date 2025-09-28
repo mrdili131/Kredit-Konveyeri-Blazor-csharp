@@ -1,6 +1,7 @@
 using Konveyer.Components;
 using Microsoft.EntityFrameworkCore;
 using Konveyer.Data;
+using Konveyer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<KonveyerDbContext>(options=>
     options.UseSqlite(builder.Configuration.GetConnectionString("Db"))
 );
+
+builder.Services.AddScoped<CreditService>();
 
 var app = builder.Build();
 
